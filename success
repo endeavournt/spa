@@ -1,0 +1,11 @@
+<!doctype html><html lang="en"><meta charset="utf-8">
+<title>Payment Success</title>
+<body style="font:14px system-ui,Helvetica,Arial">
+<h2>Payment Success</h2>
+<p id="msg">Processing...</p>
+<script>
+  const p = Object.fromEntries(new URLSearchParams(location.search));
+  document.getElementById('msg').textContent =
+    'OK. Params: ' + JSON.stringify(p);
+</script>
+</body></html>
