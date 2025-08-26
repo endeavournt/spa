@@ -1,72 +1,83 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-    <script
-      src="https://pdt.payment.amadeus.com/checkout/sdk/4.0.0/sdk-es2015.js"
-      integrity="sha384-xvc3rZS/zWy8mL4Ykp6/+RNFY82Gcr0zGdxjhIbvCjwAx6zQHbdSDW6cywI63yiS"
-      crossorigin="anonymous"
-    ></script>
-    <link
-      rel="stylesheet"
-      href="https://pdt.payment.amadeus.com/checkout/sdk/4.0.0/sdk.css"
-      integrity="sha384-PxY0l2o4ZNHU96cDetNVSb5wJDrxX63KNcT60xxnPjxvx4/uxfFxysATJleJHaaQ"
-      crossorigin="anonymous"
-    />
-    <title>Outpayce Checkout SDK - Basic HTML Integration</title>
-    <style>
-        #pay-button {
-            display: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            font-weight: bold;
-            text-align: center;
-            text-decoration: none;
-            border: 2px solid #4CAF50;
-            color: #fff;
-            background-color: #4CAF50;
-            border-radius: 6px;
-            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-            cursor: pointer;
-        }
-        .pay-button:hover {
-            background-color: #fff;
-            color: #4CAF50;
-        }
-        .pay-button:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.5);
-        }
-    </style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Outpayce Checkout SDK – Basic</title>
+
+  <!-- SDK 4.0.0 (giữ nguyên như bạn đang dùng). Nếu Amadeus cấp URL test khác, thay cho phù hợp -->
+  <link
+    rel="stylesheet"
+    href="https://pdt.payment.amadeus.com/checkout/sdk/4.0.0/sdk.css"
+    integrity="sha384-PxY0l2o4ZNHU96cDetNVSb5wJDrxX63KNcT60xxnPjxvx4/uxfFxysATJleJHaaQ"
+    crossorigin="anonymous"
+  />
+  <script
+    src="https://pdt.payment.amadeus.com/checkout/sdk/4.0.0/sdk-es2015.js"
+    integrity="sha384-xvc3rZS/zWy8mL4Ykp6/+RNFY82Gcr0zGdxjhIbvCjwAx6zQHbdSDW6cywI63yiS"
+    crossorigin="anonymous"
+  ></script>
+
+  <style>
+    #pay-button{
+      display:none;padding:12px 24px;font-size:16px;font-weight:600;
+      border:2px solid #4CAF50;color:#fff;background:#4CAF50;border-radius:6px;cursor:pointer
+    }
+    #pay-button:hover{background:#fff;color:#4CAF50}
+  </style>
 </head>
 <body>
-    <div id="payment-form-container"></div>
-    <button id="pay-button" onclick="pay()">Pay</button>
-</body>
-<script>
-    var SDKConfiguration = {
-        container: 'payment-form-container',
-        ppid: 'AAKM2HGL4ZY4EESINMY8OP3XNMFOQDTW',
-        environment: 'development',
-        locale: 'vi-VN',
+  <div id="payment-form-container"></div>
+  <button id="pay-button" type="button">Pay</button>
+
+  <script>
+    // Đọc tham số từ URL: ?ppid=...&env=test|pdt
+    const params = new URLSearchParams(location.search);
+    const ppid = params.get('ppid');                 // BẮT BUỘC: PPID/checkoutFormId
+    const env  = (params.get('env') || 'pdt').toLowerCase(); // 'test' hoặc 'pdt'
+
+    // Helper hiển thị lỗi sớm nếu thiếu cấu hình
+    function showError(msg){
+      console.error(msg);
+      const p = document.createElement('p');
+      p.style.color = 'red';
+      p.textContent = msg;
+      document.body.appendChild(p);
+    }
+
+    if (!ppid) showError('Missing ?ppid=<checkoutFormId> in URL');
+    if (!window.AmadeusCheckout) showError('SDK not loaded');
+
+    if (ppid && window.AmadeusCheckout){
+      const checkout = new AmadeusCheckout({
+        container: 'payment-form-container', // id của div
+        ppid,                                 // PPID từ query
+        environment: env,                     // 'test' (sandbox) hoặc 'pdt' (production)
+        locale: 'en-GB',
         options: {}
-    }
-    var checkout = new AmadeusCheckout(SDKConfiguration);
+      });
 
-    checkout.onReady = function (mopsList, sessionTimeout) {
-        console.log(mopsList);
-        document.getElementById("pay-button").style.display = "inline";
-    };
+      checkout.onReady = function(mopsList, sessionTimeout){
+        console.log('[SDK] ready', { mopsList, sessionTimeout });
+        document.getElementById('pay-button').style.display = 'inline-block';
+      };
 
-    checkout.onSuccess = function (mainMopId, successData) {
-        console.log(successData);
-    };
+      checkout.onSuccess = function(mainMopId, successData){
+        console.log('[SDK] success', mainMopId, successData);
+        // TODO: nếu muốn đóng trang hoặc điều hướng sau khi thành công
+      };
 
-    // Start the SDK
-    checkout.start();
+      checkout.onError = function(err){
+        console.error('[SDK] error', err);
+        alert('SDK error: ' + (err?.message || err?.code || JSON.stringify(err)));
+      };
 
-    function pay() {
+      checkout.start();
+
+      document.getElementById('pay-button').addEventListener('click', function(){
         checkout.pay();
+      });
     }
-</script>
+  </script>
+</body>
 </html>
