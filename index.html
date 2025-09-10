@@ -86,6 +86,8 @@
     checkout.delegateServerCall = function(actionTokenList, delegationType) {
         // Called when there is a payment transaction that is delegated to calling application.
         // For standard integrations this callback can be ignored.
+          console.log("delegateServerCall called with:", actionTokenList, delegationType);
+
         console.log("delegateServerCall")
     };
 
@@ -98,5 +100,6 @@
   </script>
 </body>
 </html>
+
 
 
