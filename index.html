@@ -1,10 +1,18 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta http-equiv="Content-Security-Policy" 
-        content="default-src 'self'; connect-src 'self' https://paypages.test.payment.amadeus.com;">
+  
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self' https://pdt.payment.amadeus.com 'unsafe-inline';
+        style-src 'self' https://pdt.payment.amadeus.com 'unsafe-inline';
+        connect-src https://pdt.payment.amadeus.com;
+        frame-src https://pdt.payment.amadeus.com;
+        img-src 'self' data: https://pdt.payment.amadeus.com;
+      ">
   <title>Outpayce Checkout SDK – Basic</title>
 
   <!-- SDK 4.0.0 (giữ nguyên như bạn đang dùng). Nếu Amadeus cấp URL test khác, thay cho phù hợp -->
@@ -102,6 +110,7 @@
   </script>
 </body>
 </html>
+
 
 
 
