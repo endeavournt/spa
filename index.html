@@ -61,7 +61,11 @@
         console.log('[SDK] ready', { mopsList, sessionTimeout });
         document.getElementById('pay-button').style.display = 'inline-block';
       };
-
+      checkout.onPaymentMethodsChange = function(change) {
+        // Called when there is a change on: the selected methods of payment, the fees, the cards bin or the validity of the form
+        // replace the deprecated onChange method
+        console.log("onPaymentMethodsChange")
+    };
       checkout.onSuccess = function(mainMopId, successData){
         console.log('[SDK] success', mainMopId, successData);
         // TODO: nếu muốn đóng trang hoặc điều hướng sau khi thành công
@@ -81,3 +85,4 @@
   </script>
 </body>
 </html>
+
